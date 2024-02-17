@@ -10,7 +10,10 @@ import org.hibernate.envers.Audited;
 import java.util.UUID;
 
 @Entity
-@Table(name="events")
+@Table(name = "events",
+uniqueConstraints = {
+        @UniqueConstraint(name = "name_is_unique", columnNames = {"name"})
+})
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,6 +24,6 @@ public class Abracadabra {
     @GeneratedValue
     private Integer id;
 
-    @Column(name="name", unique = true)
+    @Column(name = "name")
     private String name;
 }

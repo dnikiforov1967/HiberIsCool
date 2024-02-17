@@ -11,7 +11,7 @@ public class Blau {
     private final Mallow mallow;
 
     @GetMapping("/xxx")
-    public String xxx() throws BEx {
+    public String xxx() throws Throwable {
         mallow.mallow();
         return "OK";
     }
