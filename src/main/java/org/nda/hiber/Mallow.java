@@ -31,7 +31,7 @@ public class Mallow {
             return abracadabra;
         } catch(Exception e) {
             System.out.println("Transaction status after "+ TransactionAspectSupport.currentTransactionStatus().isRollbackOnly());
-            log.warn("Problem "+e.getMessage());
+            log.warn("Problem {}", e.getMessage());
             specialJpa.request("Assa");
             throw e;
         }
