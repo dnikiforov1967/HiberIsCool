@@ -2,21 +2,15 @@ package org.nda.hiber;
 
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
+import org.nda.hiber.ord.Customer;
+import org.nda.hiber.ord.BookOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import java.util.Optional;
 
 
 @SpringBootTest
@@ -33,6 +27,20 @@ public class JpaHiberTest {
     private TransactionTemplate transactionTemplate;
     @Autowired
     private EntityManager em;
+
+    @Test
+    @Transactional
+    public void saveInOneClick() {
+        Customer customer = new Customer();
+        customer.setId(1);
+        for(int i =1; i<=3; i++) {
+            BookOrder order = new BookOrder();
+            order.setId(i);
+            customer.getOrders().add(order);
+        }
+        em.persist(customer);
+        em.flush();
+    }
 
     @Test
     @Sql(statements = {"insert into raccoon(name, fat, clean, version) values('Fred',false,false,1)"}, config = @SqlConfig(
