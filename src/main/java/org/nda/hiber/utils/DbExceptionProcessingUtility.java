@@ -7,21 +7,25 @@ import java.util.Objects;
 
 public final class DbExceptionProcessingUtility {
 
+    private static final Map<String, RuntimeException> EXCEPTION_MAP = Map.of(
+            "BOOK_UK", new IllegalArgumentException("Ugly")
+    );
+
     private DbExceptionProcessingUtility() {
     }
 
-    public static void proceedException(Throwable initialException, Map<String, RuntimeException> exceptionMap) {
+    public static void proceedException(Throwable initialException) {
         var currEx = initialException;
         while(Objects.nonNull(currEx)) {
             if (currEx.getClass() == ConstraintViolationException.class) {
-                proceedConstraints((ConstraintViolationException)currEx, exceptionMap);
+                proceedConstraints((ConstraintViolationException)currEx);
             }
             currEx = currEx.getCause();
         }
     }
 
-    private static void proceedConstraints(ConstraintViolationException cve, Map<String, RuntimeException> exceptionMap) {
-        RuntimeException exception = exceptionMap.entrySet().stream().filter(
+    private static void proceedConstraints(ConstraintViolationException cve) {
+        RuntimeException exception = EXCEPTION_MAP.entrySet().stream().filter(
                 ent -> cve.getMessage().contains(ent.getKey())
         ).map(Map.Entry::getValue).findFirst().orElse(null);
         if (Objects.nonNull(exception)) {
