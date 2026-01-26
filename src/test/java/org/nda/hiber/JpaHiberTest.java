@@ -69,6 +69,17 @@ public class JpaHiberTest {
 
     }
 
+    @Test
+    @Sql(statements = {"insert into raccoon(name, fat, clean, version) values('Fred',false,false,1)"}, config = @SqlConfig(
+            transactionMode = SqlConfig.TransactionMode.ISOLATED
+    ))
+    void da() {
+        repo.bonus("Fred");
+        Raccoon raccoon = repo.findById("Fred").get();
+        System.out.println(raccoon.getFat());
+
+    }
+
 
     @Test
     @Sql(statements = {"insert into raccoon(name, fat, clean, version) values('Fred',false,false,1)"}, config = @SqlConfig(
