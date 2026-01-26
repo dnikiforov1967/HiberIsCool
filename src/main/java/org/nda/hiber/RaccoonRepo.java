@@ -3,6 +3,8 @@ package org.nda.hiber;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface RaccoonRepo extends JpaRepository<Raccoon, String> {
 
@@ -11,5 +13,10 @@ public interface RaccoonRepo extends JpaRepository<Raccoon, String> {
     nativeQuery = true)
     @Modifying
     void upsert(Raccoon entity);
+
+    @Transactional
+    @Query(value="UPDATE raccoon set fat = true where name = :name", nativeQuery = true)
+    @Modifying
+    void bonus(@Param("name") String name);
 
 }
