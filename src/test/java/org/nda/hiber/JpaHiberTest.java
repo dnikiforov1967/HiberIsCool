@@ -2,6 +2,7 @@ package org.nda.hiber;
 
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
+import org.nda.hiber.ord.Body;
 import org.nda.hiber.ord.Customer;
 import org.nda.hiber.ord.BookOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,26 @@ public class JpaHiberTest {
     private TransactionTemplate transactionTemplate;
     @Autowired
     private EntityManager em;
+    @Autowired
+    private BodyRepo bodyRepo;
+
+    @Test
+    @Sql(statements = {"insert into head(id, name) values(1,'A')",
+            "insert into head(id, name) values(2,'B')",
+            "insert into body(id, name, head_id) values(1,'Body',1)"}, config = @SqlConfig(
+            transactionMode = SqlConfig.TransactionMode.ISOLATED
+    ))
+    @Transactional
+    void bodyTest() {
+        Body body = bodyRepo.findById(1).get();
+        body.setName("R");
+        bodyRepo.saveAndFlush(body);
+        em.clear();
+        body = bodyRepo.findById(1).get();
+        System.out.println(body.getHead().getName());
+    }
+
+
 
     @Test
     @Transactional
