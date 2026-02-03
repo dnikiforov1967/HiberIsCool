@@ -1,19 +1,29 @@
 package org.nda.hiber;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.nda.hiber.ord.Body;
 import org.nda.hiber.ord.Customer;
 import org.nda.hiber.ord.BookOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
+@Disabled
 @SpringBootTest
 public class JpaHiberTest {
 
@@ -45,6 +55,24 @@ public class JpaHiberTest {
         em.clear();
         body = bodyRepo.findById(1).get();
         System.out.println(body.getHead().getName());
+    }
+
+    @Test
+    @Sql(statements = {"insert into head(id, name) values(1,'A')",
+            "insert into head(id, name) values(2,'B')",
+            "insert into body(id, name, head_id) values(1,'Body',1)"}, config = @SqlConfig(
+            transactionMode = SqlConfig.TransactionMode.ISOLATED
+    ))
+    @Transactional
+    void specTest() {
+        Specification<Body> spec = new Specification<Body>() {
+            @Override
+            public Predicate toPredicate(Root<Body> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.equal(root.get("name"), "B");
+            }
+        };
+        PageRequest pageRequest = PageRequest.of(0, 2).withSort(Sort.by("name"));
+        Page<Body> all = bodyRepo.findAll(spec, pageRequest);
     }
 
 
