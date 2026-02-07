@@ -2,6 +2,7 @@ package org.nda.hiber;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAccessor;
 
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OtherTests {
@@ -17,17 +19,16 @@ public class OtherTests {
     @Test
     void testOfDate() throws ParseException {
         DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
-                .appendPattern("dd.MM.yyyy")
-                .optionalStart()
-                .appendPattern(" HH:mm:ss")
-                .optionalEnd()
+                .append(ISO_LOCAL_DATE_TIME)
+                .appendLiteral('Z')
                 .toFormatter()
                 .withZone(ZoneId.systemDefault());
-        TemporalAccessor parse = dateTimeFormatter.parse("04.07.2025 23:22:21");
-        System.out.println(LocalDate.from(parse));
+        TemporalAccessor parse = dateTimeFormatter.parse("2025-04-07T23:22:21Z");
+        Instant from = Instant.from(parse);
+        System.out.println(Date.from(from));
 
-        parse = dateTimeFormatter.parse("04.07.2025");
-        System.out.println(LocalDate.from(parse));
+        //parse = dateTimeFormatter.parse("04.07.2025");
+        //System.out.println(LocalDate.from(parse));
     }
 
 
